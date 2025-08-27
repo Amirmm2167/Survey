@@ -1,5 +1,8 @@
 <?php
-// Core files must be included before this template
+// Core dependencies must be included first to make functions available.
+require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../core/localization.php';
+require_once __DIR__ . '/../core/functions.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= $current_lang; ?>" dir="<?= $page_direction; ?>">
