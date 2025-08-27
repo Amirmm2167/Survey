@@ -1,10 +1,12 @@
 <?php
-require_once __DIR__ . '/core/database.php';
-require_once __DIR__ . '/templates/header.php';
+require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../templates/header.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../index.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
@@ -49,11 +51,12 @@ $predefined_themes = [
 ?>
 
 <h1>Edit Survey: <?= htmlspecialchars($survey['title']); ?></h1>
-<a href="creator_dashboard.php">Back to Dashboard</a>
+<a href="index.php">Back to Dashboard</a>
 
 <hr>
 
-<form action="handle_edit_survey.php" method="POST">
+<form action="../api.php" method="POST">
+    <input type="hidden" name="action" value="update_survey">
     <input type="hidden" name="survey_id" value="<?= $survey_id; ?>">
 
     <div>

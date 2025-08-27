@@ -1,12 +1,15 @@
 <?php
-require_once __DIR__ . '/templates/header.php';
-require_once __DIR__ . '/core/database.php';
+require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../core/database.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id']) || $_SESSION['role_name'] !== 'admin') {
-    header('Location: login.php');
+    header('Location: ../index.php'); // Redirect to main landing page
     exit;
 }
+
+// The header must be included AFTER the auth check and potential redirect
+require_once __DIR__ . '/../templates/header.php';
 
 // --- Fetch data for display ---
 // Fetch all users with their roles and subscription plan
@@ -47,7 +50,7 @@ try {
 ?>
 
 <h1><?= trans('admin_dashboard'); ?></h1>
-<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="logout.php"><?= trans('logout'); ?></a></p>
+<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="../logout.php"><?= trans('logout'); ?></a></p>
 
 <hr>
 
@@ -65,8 +68,10 @@ if (isset($_SESSION['user_creation_error'])) {
     unset($_SESSION['user_creation_error']);
 }
 ?>
-<form action="handle_create_user.php" method="POST">
+<form action="../api.php" method="POST" id="create-user-form">
+    <input type="hidden" name="action" value="create_user">
     <input type="hidden" name="role_id" value="<?= $creator_role_id; ?>">
+    <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
     <div>
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
@@ -130,6 +135,18 @@ if (isset($_SESSION['user_creation_error'])) {
     </tbody>
 </table>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const createUserForm = document.getElementById('create-user-form');
+    if (createUserForm) {
+        createUserForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleFormSubmit(this);
+        });
+    }
+});
+</script>
+
 <?php
-require_once __DIR__ . '/templates/footer.php';
+require_once __DIR__ . '/../templates/footer.php';
 ?>

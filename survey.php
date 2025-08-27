@@ -119,7 +119,8 @@ try {
 <p><?= nl2br(htmlspecialchars($survey['description'])); ?></p>
 <hr>
 
-<form action="handle_submit_survey.php" method="POST">
+<form action="api.php" method="POST" id="survey-form">
+    <input type="hidden" name="action" value="submit_survey">
     <input type="hidden" name="survey_id" value="<?= $survey_id; ?>">
     <input type="hidden" name="respondent_id" value="<?= $respondent_id; ?>">
     <input type="hidden" name="question_count" value="<?= $question_count; ?>">
@@ -170,6 +171,13 @@ try {
     <br>
     <button type="submit">Submit Survey</button>
 </form>
+
+<script>
+document.getElementById('survey-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleFormSubmit(this);
+});
+</script>
 
 <?php
 require_once __DIR__ . '/templates/footer.php';

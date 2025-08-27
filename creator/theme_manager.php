@@ -1,10 +1,11 @@
 <?php
-require_once __DIR__ . '/core/database.php';
-require_once __DIR__ . '/templates/header.php';
+require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../templates/header.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../index.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
@@ -51,7 +52,7 @@ $can_create_new = $theme_count < $theme_limit;
 
 <h1>Theme Manager</h1>
 <p>Create and manage your custom survey themes.</p>
-<a href="creator_dashboard.php">Back to Dashboard</a>
+<a href="index.php">Back to Dashboard</a>
 
 <hr>
 

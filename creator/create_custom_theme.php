@@ -1,10 +1,11 @@
 <?php
-require_once __DIR__ . '/core/database.php';
-require_once __DIR__ . '/templates/header.php';
+require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../templates/header.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../index.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
@@ -45,7 +46,9 @@ $google_fonts = ['Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald', 'Source 
 <div style="display: flex; gap: 30px;">
     <!-- Form Side -->
     <div style="flex: 1;">
-        <form action="handle_save_theme.php" method="POST">
+        <form action="../api.php" method="POST" id="create-theme-form">
+            <input type="hidden" name="action" value="save_theme">
+            <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
             <div>
                 <label for="theme_name">Theme Name:</label>
                 <input type="text" id="theme_name" name="theme_name" required>
@@ -129,9 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
     preview.querySelector('.preview-link').style.color = accentColorPicker.value;
     preview.querySelector('.preview-panel').style.backgroundColor = panelBgColorPicker.value;
 });
+
+document.getElementById('create-theme-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleFormSubmit(this);
+});
 </script>
 
 
 <?php
-require_once __DIR__ . '/templates/footer.php';
+require_once __DIR__ . '/../templates/footer.php';
 ?>

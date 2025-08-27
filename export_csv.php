@@ -1,30 +1,29 @@
 <?php
 require_once __DIR__ . '/core/session.php';
 require_once __DIR__ . '/core/database.php';
+require_once __DIR__ . '/core/functions.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    // Cannot export if not logged in
+    http_response_code(403);
     exit;
 }
 $user_id = $_SESSION['user_id'];
 $survey_id = filter_input(INPUT_GET, 'survey_id', FILTER_VALIDATE_INT);
 
-if (!$survey_id) {
-    die("No survey specified.");
+if (!$survey_id || !verify_survey_ownership($pdo, $survey_id, $user_id)) {
+    http_response_code(404);
+    die("Survey not found or permission denied.");
 }
 
-// --- Fetch Survey and Verify Ownership ---
+// --- Fetch Survey Title for filename ---
 try {
-    $stmt = $pdo->prepare("SELECT title FROM surveys WHERE id = ? AND creator_id = ?");
-    $stmt->execute([$survey_id, $user_id]);
-    $survey = $stmt->fetch();
-    if (!$survey) {
-        die("Survey not found or you do not have permission to export it.");
-    }
+    $stmt = $pdo->prepare("SELECT title FROM surveys WHERE id = ?");
+    $stmt->execute([$survey_id]);
+    $survey_title = $stmt->fetchColumn();
 } catch (PDOException $e) {
-    // error_log($e->getMessage());
-    die("An error occurred while fetching the survey.");
+    die("An error occurred while fetching the survey title.");
 }
 
 // --- Set HTTP Headers for CSV Download ---
@@ -32,7 +31,7 @@ $filename = "survey_" . $survey_id . "_results_" . date('Y-m-d') . ".csv";
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 
-// --- Fetch Data (similar to view_results.php) ---
+// --- Fetch Data ---
 $results = [];
 $questions = [];
 try {
@@ -57,19 +56,14 @@ try {
         $results[$row['respondent_id']][$row['question_id']] = $row['answer_text'] ?? $row['selected_options'];
     }
 } catch (PDOException $e) {
-    // error_log($e->getMessage());
     die("An error occurred while fetching results for CSV export.");
 }
 
 // --- Write to CSV ---
-// Open the output stream
 $output = fopen('php://output', 'w');
-
-// Write the header row
 $header = array_merge(['Respondent ID'], array_values($questions));
 fputcsv($output, $header);
 
-// Write the data rows
 foreach ($results as $respondent_id => $answers) {
     $row = [$respondent_id];
     foreach ($questions as $q_id => $q_text) {

@@ -1,10 +1,11 @@
 <?php
-require_once __DIR__ . '/templates/header.php';
-require_once __DIR__ . '/core/database.php';
+require_once __DIR__ . '/../templates/header.php';
+require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/session.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../index.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
@@ -75,13 +76,13 @@ try {
 ?>
 
 <h1>Results for "<?= htmlspecialchars($survey['title']); ?>"</h1>
-<a href="creator_dashboard.php">Back to Dashboard</a>
+<a href="index.php">Back to Dashboard</a>
 
 <hr>
 
 <h3>Summary</h3>
 <p><strong>Total Responses:</strong> <?= $total_responses; ?></p>
-<a href="export_csv.php?survey_id=<?= $survey_id; ?>" style="display:inline-block; padding:10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+<a href="../export_csv.php?survey_id=<?= $survey_id; ?>" style="display:inline-block; padding:10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
     Export All as CSV
 </a>
 
