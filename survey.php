@@ -1,10 +1,12 @@
 <?php
-require_once __DIR__ . '/templates/header.php';
 require_once __DIR__ . '/core/database.php';
 
 // --- Get Survey ID and Validate ---
 $survey_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$survey_id) {
+    // Can't show a themed page if we don't know the survey.
+    // Include a minimal header/footer.
+    require_once __DIR__ . '/templates/header.php';
     echo "<p>Invalid survey link.</p>";
     require_once __DIR__ . '/templates/footer.php';
     exit;
@@ -20,6 +22,7 @@ try {
     $survey = $stmt->fetch();
 
     if (!$survey) {
+        require_once __DIR__ . '/templates/header.php';
         echo "<p>This survey is not available or cannot be found.</p>";
         require_once __DIR__ . '/templates/footer.php';
         exit;
@@ -32,10 +35,31 @@ try {
 
 } catch (PDOException $e) {
     // error_log($e->getMessage());
+    require_once __DIR__ . '/templates/header.php';
     echo "<p>An error occurred while loading the survey.</p>";
     require_once __DIR__ . '/templates/footer.php';
     exit;
 }
+
+// --- Theme Selection Logic ---
+// This logic runs *before* the header is included.
+$predefined_themes = [
+    1 => 'default',
+    2 => 'cosmic',
+    3 => 'dark',
+    4 => 'green',
+    5 => 'blue'
+];
+$theme_name = 'default'; // Fallback theme
+if (isset($survey['theme_id']) && isset($predefined_themes[$survey['theme_id']])) {
+    $theme_name = $predefined_themes[$survey['theme_id']];
+}
+// The $theme_file variable is used by header.php
+$theme_file = "public/css/themes/{$theme_name}.css";
+
+
+// --- NOW we can include the header, which will be properly themed ---
+require_once __DIR__ . '/templates/header.php';
 
 
 // --- Credit Check and Reservation Logic ---

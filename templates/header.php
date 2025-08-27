@@ -8,12 +8,25 @@ require_once __DIR__ . '/../core/localization.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= trans('site_title'); ?></title>
-    <!-- I will add CSS files later in the styling step -->
-    <style>
-        body { font-family: sans-serif; direction: <?= $page_direction; ?>; }
-        .container { max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        .error { color: red; }
-    </style>
+
+    <!-- Google Fonts for Persian -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="public/css/style.css">
+
+    <!-- Theme-specific stylesheet will be loaded here -->
+    <?php
+    // Define a default theme. Page-specific logic can override $theme_file before this header is included.
+    if (!isset($theme_file)) {
+        $theme_file = 'public/css/themes/default.css';
+    }
+    if (file_exists($theme_file)) {
+        echo '<link rel="stylesheet" href="' . htmlspecialchars($theme_file) . '">';
+    }
+    ?>
 </head>
 <body>
     <div class="container">

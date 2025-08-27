@@ -66,6 +66,9 @@ try {
             / <?= $plan['credits_allowance'] == -1 ? 'Unlimited' : $plan['credits_allowance']; ?>
         </p>
         <p>Your plan renews/expires on: <?= date('Y-m-d', strtotime($plan['end_date'])); ?></p>
+        <?php if ($plan['custom_theme_limit'] > 0): ?>
+            <p><a href="theme_manager.php">Manage Your Custom Themes</a></p>
+        <?php endif; ?>
     <?php else: ?>
         <p>You do not have an active subscription or wallet. Please contact an administrator.</p>
     <?php endif; ?>

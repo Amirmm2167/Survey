@@ -1,0 +1,16 @@
+/* --- Green Theme --- */
+
+:root {
+    --color-primary: #28a745;   /* A standard, vibrant green */
+    --color-background: #f0f9f4; /* A very light, minty green background */
+    --color-surface: #ffffff;   /* White panels */
+    --color-text: #1e4620;       /* A dark, forest green for text */
+    --color-muted: #5a785c;      /* Muted, earthy green */
+    --color-accent: #f5b700;    /* A warm gold for accents */
+    --color-success: #28a745;   /* The primary color also works for success */
+    --border-color: #c3e6cb;    /* A light green for borders */
+}
+
+button:hover, a.button-link:hover {
+    background-color: #218838;
+}

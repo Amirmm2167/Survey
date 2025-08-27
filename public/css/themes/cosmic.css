@@ -1,0 +1,16 @@
+/* --- Cosmic Theme --- */
+
+:root {
+    --color-primary: #9d4edd;   /* A vibrant purple */
+    --color-background: #0c0a1a; /* Deep space blue/purple */
+    --color-surface: #1c1833;   /* A slightly lighter nebula purple */
+    --color-text: #f2e9ff;       /* A very light lavender for text */
+    --color-muted: #a49fc9;      /* Muted lavender */
+    --color-accent: #00f5d4;    /* A bright, glowing cyan for accents */
+    --color-success: #70e000;   /* A vibrant lime green for success */
+    --border-color: #3d346b;    /* A dark purple for borders */
+}
+
+button:hover, a.button-link:hover {
+    background-color: #8b3fcc;
+}
