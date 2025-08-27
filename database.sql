@@ -1,59 +1,21 @@
 -- Survey Platform Database Schema v0.0.1
 -- This single file contains all necessary table structures and initial data.
 
--- Main Schema
-CREATE TABLE IF NOT EXISTS `roles` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(50) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `plans` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `level` INT NOT NULL UNIQUE,
-  `name` VARCHAR(100) NOT NULL,
-  `credits_allowance` INT NOT NULL,
-  `can_use_predefined_themes` BOOLEAN DEFAULT FALSE,
-  `can_use_custom_themes` BOOLEAN DEFAULT FALSE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `username` VARCHAR(100) NOT NULL UNIQUE,
-  `email` VARCHAR(255) NOT NULL UNIQUE,
-  `password_hash` VARCHAR(255) NOT NULL,
-  `role_id` INT NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ... all other CREATE TABLE statements ...
+CREATE TABLE IF NOT EXISTS `roles` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(50) NOT NULL UNIQUE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `plans` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `level` INT NOT NULL UNIQUE, `name` VARCHAR(100) NOT NULL, `credits_allowance` INT NOT NULL, `can_use_predefined_themes` BOOLEAN DEFAULT FALSE, `can_use_custom_themes` BOOLEAN DEFAULT FALSE, `custom_theme_limit` INT NOT NULL DEFAULT 0 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `users` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `username` VARCHAR(100) NOT NULL UNIQUE, `email` VARCHAR(255) NULL, `phone_number` VARCHAR(50) NULL UNIQUE, `password_hash` VARCHAR(255) NOT NULL, `role_id` INT NOT NULL, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`), CONSTRAINT `chk_email_or_phone` CHECK (`email` IS NOT NULL OR `phone_number` IS NOT NULL) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `subscriptions` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `user_id` INT NOT NULL UNIQUE, `plan_id` INT NOT NULL, `start_date` DATETIME NOT NULL, `end_date` DATETIME NOT NULL, `is_active` BOOLEAN DEFAULT TRUE, FOREIGN KEY (`user_id`) REFERENCES `users`(`id`), FOREIGN KEY (`plan_id`) REFERENCES `plans`(`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `wallets` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `user_id` INT NOT NULL UNIQUE, `balance` INT NOT NULL DEFAULT 0, `reserved_balance` INT NOT NULL DEFAULT 0, `last_refill_date` DATETIME, FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `themes` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(100) NOT NULL, `css_path` VARCHAR(255) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `custom_themes` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `creator_id` INT NOT NULL, `theme_name` VARCHAR(100) NOT NULL, `color_primary` VARCHAR(7) NOT NULL DEFAULT '#77b9df', `color_background` VARCHAR(7) NOT NULL DEFAULT '#FFFFFF', `color_text` VARCHAR(7) NOT NULL DEFAULT '#333333', `color_accent` VARCHAR(7) NOT NULL DEFAULT '#ff7452', `color_panel_bg` VARCHAR(7) NOT NULL DEFAULT '#f8f9fa', `font_family` VARCHAR(100) NULL, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (`creator_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `surveys` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `unique_id` VARCHAR(16) NOT NULL UNIQUE, `creator_id` INT NOT NULL, `title` VARCHAR(255) NOT NULL, `description` TEXT, `status` ENUM('draft', 'published', 'closed') NOT NULL DEFAULT 'draft', `access_level` ENUM('public', 'private_code') NOT NULL DEFAULT 'public', `access_code` VARCHAR(50) NULL, `theme_id` INT NULL, `custom_theme_id` INT NULL, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, FOREIGN KEY (`creator_id`) REFERENCES `users`(`id`), FOREIGN KEY (`theme_id`) REFERENCES `themes`(`id`), FOREIGN KEY (`custom_theme_id`) REFERENCES `custom_themes`(`id`) ON DELETE SET NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `questions` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `survey_id` INT NOT NULL, `question_text` TEXT NOT NULL, `question_type` ENUM('text', 'textarea', 'radio', 'checkbox', 'dropdown', 'rating_stars') NOT NULL, `display_order` INT NOT NULL, `is_required` BOOLEAN DEFAULT TRUE, FOREIGN KEY (`survey_id`) REFERENCES `surveys`(`id`) ON DELETE CASCADE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `question_options` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `question_id` INT NOT NULL, `option_text` VARCHAR(255) NOT NULL, `display_order` INT NOT NULL, FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`) ON DELETE CASCADE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `respondents` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `survey_id` INT NOT NULL, `session_identifier` VARCHAR(255) NOT NULL, `started_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `completed_at` TIMESTAMP NULL, UNIQUE KEY `survey_session` (`survey_id`, `session_identifier`), FOREIGN KEY (`survey_id`) REFERENCES `surveys`(`id`) ON DELETE CASCADE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `answers` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `respondent_id` INT NOT NULL, `question_id` INT NOT NULL, `answer_text` TEXT, `selected_option_id` INT, FOREIGN KEY (`respondent_id`) REFERENCES `respondents`(`id`) ON DELETE CASCADE, FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`) ON DELETE CASCADE, FOREIGN KEY (`selected_option_id`) REFERENCES `question_options`(`id`) ON DELETE CASCADE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `answer_selections` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `answer_id` INT NOT NULL, `selected_option_id` INT NOT NULL, FOREIGN KEY (`answer_id`) REFERENCES `answers`(`id`) ON DELETE CASCADE, FOREIGN KEY (`selected_option_id`) REFERENCES `question_options`(`id`) ON DELETE CASCADE ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS `credit_transactions` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `user_id` INT NOT NULL, `survey_id` INT NULL, `transaction_type` ENUM('survey_response', 'admin_add', 'plan_renewal', 'initial_credits') NOT NULL, `credits_changed` INT NOT NULL, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE, FOREIGN KEY (`survey_id`) REFERENCES `surveys`(`id`) ON DELETE SET NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Initial Data (Seed)
 INSERT INTO `roles` (`id`, `name`) VALUES (1, 'admin'), (2, 'creator') ON DUPLICATE KEY UPDATE name=VALUES(name);
-INSERT INTO `plans` (`id`, `level`, `name`, `credits_allowance`, `can_use_predefined_themes`, `can_use_custom_themes`) VALUES
-(1, 1, 'Free', 200, FALSE, FALSE),
-(2, 2, 'Basic', 500, TRUE, FALSE),
-(3, 3, 'Plus', 1000, TRUE, FALSE),
-(4, 4, 'Pro', 2000, TRUE, TRUE),
-(5, 5, 'Enterprise', -1, TRUE, TRUE)
-ON DUPLICATE KEY UPDATE name=VALUES(name), level=VALUES(level);
-
-
--- Migrations / Alterations from later features
-ALTER TABLE `users` ADD COLUMN `phone_number` VARCHAR(50) NULL UNIQUE AFTER `email`, MODIFY COLUMN `email` VARCHAR(255) NULL, ADD CONSTRAINT `chk_email_or_phone` CHECK (`email` IS NOT NULL OR `phone_number` IS NOT NULL);
-ALTER TABLE `surveys` ADD COLUMN `unique_id` VARCHAR(16) NULL UNIQUE AFTER `id`;
-UPDATE `surveys` SET `unique_id` = LOWER(HEX(RANDOM_BYTES(8))) WHERE `unique_id` IS NULL;
-ALTER TABLE `surveys` MODIFY COLUMN `unique_id` VARCHAR(16) NOT NULL;
-ALTER TABLE `plans` ADD COLUMN `custom_theme_limit` INT NOT NULL DEFAULT 0 AFTER `can_use_custom_themes`;
-UPDATE `plans` SET `custom_theme_limit` = 5 WHERE `level` = 4;
-UPDATE `plans` SET `custom_theme_limit` = 10 WHERE `level` = 5;
-CREATE TABLE IF NOT EXISTS `credit_transactions` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `user_id` INT NOT NULL,
-  `survey_id` INT NULL,
-  `transaction_type` ENUM('survey_response', 'admin_add', 'plan_renewal', 'initial_credits') NOT NULL,
-  `credits_changed` INT NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`survey_id`) REFERENCES `surveys`(`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `plans` (`id`, `level`, `name`, `credits_allowance`, `can_use_predefined_themes`, `can_use_custom_themes`, `custom_theme_limit`) VALUES (1, 1, 'Free', 200, FALSE, FALSE, 0), (2, 2, 'Basic', 500, TRUE, FALSE, 0), (3, 3, 'Plus', 1000, TRUE, FALSE, 0), (4, 4, 'Pro', 2000, TRUE, TRUE, 5), (5, 5, 'Enterprise', -1, TRUE, TRUE, 10) ON DUPLICATE KEY UPDATE name=VALUES(name), level=VALUES(level);
