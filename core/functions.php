@@ -124,6 +124,12 @@ function create_user($pdo, $userData) {
         $stmt = $pdo->prepare("INSERT INTO wallets (user_id, balance, last_refill_date) VALUES (?, ?, ?)");
         $stmt->execute([$user_id, $userData['initial_credits'], $start_date]);
 
+        // 5. Log the initial credit transaction
+        if ($userData['initial_credits'] > 0) {
+            $stmt = $pdo->prepare("INSERT INTO credit_transactions (user_id, transaction_type, credits_changed) VALUES (?, 'initial_credits', ?)");
+            $stmt->execute([$user_id, $userData['initial_credits']]);
+        }
+
         $pdo->commit();
         return true;
 
@@ -289,6 +295,11 @@ function submit_survey_answers($pdo, $survey_id, $respondent_id, $question_count
         if ($creator_id) {
             $stmt = $pdo->prepare("UPDATE wallets SET reserved_balance = reserved_balance - ? WHERE user_id = ? AND reserved_balance >= ?");
             $stmt->execute([$question_count, $creator_id, $question_count]);
+
+            // Log the survey response transaction
+            $credits_spent = -$question_count;
+            $stmt = $pdo->prepare("INSERT INTO credit_transactions (user_id, survey_id, transaction_type, credits_changed) VALUES (?, ?, 'survey_response', ?)");
+            $stmt->execute([$creator_id, $survey_id, $credits_spent]);
         }
 
         $stmt = $pdo->prepare("UPDATE respondents SET completed_at = CURRENT_TIMESTAMP WHERE id = ?");
@@ -342,6 +353,68 @@ function delete_custom_theme($pdo, $theme_id, $user_id) {
         // error_log("Theme deletion failed: " . $e->getMessage());
         return false;
     }
+}
+
+/**
+ * --- Admin Statistics Functions ---
+ */
+
+function get_total_user_count($pdo) {
+    return $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+}
+
+function get_total_credits_used($pdo) {
+    // Sum of all negative transactions
+    $result = $pdo->query("SELECT SUM(credits_changed) FROM credit_transactions WHERE credits_changed < 0")->fetchColumn();
+    return abs($result ?? 0);
+}
+
+function get_total_credits_available($pdo) {
+    return $pdo->query("SELECT SUM(balance) FROM wallets")->fetchColumn() ?? 0;
+}
+
+function get_total_credits_bought($pdo) {
+    // Sum of all positive transactions from admin
+    $result = $pdo->query("SELECT SUM(credits_changed) FROM credit_transactions WHERE transaction_type IN ('admin_add', 'initial_credits')")->fetchColumn();
+    return $result ?? 0;
+}
+
+function get_user_count_by_tier($pdo) {
+    return $pdo->query(
+        "SELECT p.name, COUNT(s.user_id) as user_count
+         FROM plans p
+         LEFT JOIN subscriptions s ON p.id = s.plan_id AND s.is_active = TRUE
+         GROUP BY p.id
+         ORDER BY p.level ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function get_total_survey_count($pdo) {
+    return $pdo->query("SELECT COUNT(*) FROM surveys")->fetchColumn();
+}
+
+function get_users_with_most_used_credits($pdo, $limit = 5) {
+    return $pdo->query(
+        "SELECT u.username, SUM(ABS(ct.credits_changed)) as total_used
+         FROM credit_transactions ct
+         JOIN users u ON ct.user_id = u.id
+         WHERE ct.credits_changed < 0
+         GROUP BY ct.user_id
+         ORDER BY total_used DESC
+         LIMIT " . (int)$limit
+    )->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function get_surveys_with_highest_credit_usage($pdo, $limit = 5) {
+    return $pdo->query(
+        "SELECT s.title, SUM(ABS(ct.credits_changed)) as total_usage
+         FROM credit_transactions ct
+         JOIN surveys s ON ct.survey_id = s.id
+         WHERE ct.transaction_type = 'survey_response'
+         GROUP BY ct.survey_id
+         ORDER BY total_usage DESC
+         LIMIT " . (int)$limit
+    )->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // More functions will be added here as the refactoring progresses.

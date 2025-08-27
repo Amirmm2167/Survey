@@ -170,3 +170,66 @@ thead th {
 [dir="rtl"] .language-switcher {
     right: 15px;
 }
+
+/* --- Global Header & Footer --- */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: var(--color-surface);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 0 20px;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--color-primary);
+}
+.header-logo svg {
+    width: 32px;
+    height: 32px;
+    margin: 0 10px;
+}
+
+.header-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.header-nav a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* LTR/RTL Logo and Nav positioning */
+[dir="ltr"] .header-inner {
+    flex-direction: row;
+}
+[dir="rtl"] .header-inner {
+    flex-direction: row-reverse;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--border-color);
+    color: var(--color-muted);
+}
