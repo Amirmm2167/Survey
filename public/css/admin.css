@@ -239,4 +239,28 @@
 
 .admin-main-content td {
     border-top: 1px solid var(--admin-border);
+    padding: 12px 15px;
+}
+
+.admin-main-content tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-main-content h1 {
+    color: var(--admin-accent);
+    text-shadow: 0 0 5px var(--admin-accent);
+}
+
+.admin-main-content .form-error {
+    color: #e63746;
+    padding: 10px;
+    border: 1px solid #e63746;
+    border-radius: 5px;
+    background-color: rgba(230, 55, 70, 0.1);
+}
+
+.admin-main-content .form-message.success {
+    color: #20c997;
+    border: 1px solid #20c997;
+    background-color: rgba(32, 201, 151, 0.1);
 }

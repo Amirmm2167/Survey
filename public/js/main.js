@@ -17,10 +17,10 @@ function closeModal(modalId) {
 async function handleFormSubmit(form) {
     try {
         const formData = new FormData(form);
-        const actionUrl = new URL(form.action);
-        const fullUrl = new URL(actionUrl.pathname, BASE_URL);
 
-        const response = await fetch(fullUrl, {
+        // The form.action is now a full URL thanks to the site_url() helper.
+        // No need to reconstruct it in JavaScript.
+        const response = await fetch(form.action, {
             method: form.method,
             body: formData
         });

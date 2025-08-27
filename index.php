@@ -48,7 +48,7 @@ require_once __DIR__ . '/templates/header.php';
 
 <!-- The actual login form that will be placed inside the modal -->
 <div id="login-form-content" style="display: none;">
-    <form action="api.php" method="POST" id="login-form">
+    <form action="<?= site_url('api.php'); ?>" method="POST" id="login-form">
         <input type="hidden" name="action" value="login">
         <h2><?= trans('login_welcome'); ?></h2>
         <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>

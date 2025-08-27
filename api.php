@@ -36,7 +36,7 @@ switch ($action) {
 
             $response['status'] = 'success';
             $response['message'] = 'Login successful.';
-            $response['redirect'] = ($user['role_name'] === 'admin') ? 'admin/' : 'creator/';
+            $response['redirect'] = ($user['role_name'] === 'admin') ? site_url('admin/') : site_url('creator/');
         } else {
             // Authentication failed
             $response['message'] = 'Invalid username or password.';

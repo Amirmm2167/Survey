@@ -182,7 +182,7 @@ thead th {
 }
 
 /* --- RTL Language Support --- */
-[dir="rtl"] {
+[dir="rtl"] body, [dir="rtl"] {
     font-family: var(--font-family-persian);
     text-align: right;
 }
