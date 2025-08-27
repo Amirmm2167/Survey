@@ -31,7 +31,7 @@ $lang = [
     'password' => 'رمز عبور',
     'login_button' => 'ورود',
 
-    // Admin Dashboard
+    // Admin Dashboard & User Management
     'admin_dashboard' => 'داشبورد ادمین',
     'user_management' => 'مدیریت کاربران',
     'create_new_creator' => 'ایجاد کاربر سازنده جدید',
@@ -57,6 +57,9 @@ $lang = [
     'status' => 'وضعیت',
     'responses' => 'پاسخ‌ها',
     'no_surveys_found' => "شما هنوز هیچ نظرسنجی نساخته‌اید.",
+    'status_draft' => 'پیش‌نویس',
+    'status_published' => 'منتشر شده',
+    'status_closed' => 'بسته شده',
 
     // Survey Creation/Editing
     'edit_survey' => 'ویرایش نظرسنجی',
@@ -69,9 +72,6 @@ $lang = [
     'questions' => 'سوالات',
     'add_question' => 'افزودن سوال',
     'save_survey' => 'ذخیره نظرسنجی',
-    'status_draft' => 'پیش‌نویس',
-    'status_published' => 'منتشر شده',
-    'status_closed' => 'بسته شده',
     'theme_settings' => 'تنظیمات قالب',
     'survey_theme' => 'قالب نظرسنجی',
     'theme_none' => 'هیچکدام (استفاده از پیش‌فرض سایت)',
@@ -126,5 +126,12 @@ $lang = [
 
     // Errors
     'error_content_not_found' => 'خطا: فایل محتوا یافت نشد.',
+    'error_page_not_found' => 'صفحه یافت نشد',
+    'error_page_not_found_desc' => 'متاسفانه صفحه‌ای که به دنبال آن بودید وجود ندارد.',
+    'error_forbidden' => 'دسترسی غیرمجاز',
+    'error_forbidden_desc' => 'متاسفانه شما اجازه دسترسی به این صفحه را ندارید.',
+    'error_server' => 'خطای داخلی سرور',
+    'error_server_desc' => 'متاسفانه مشکلی از سمت ما رخ داده است. در حال بررسی آن هستیم.',
+    'go_homepage' => 'بازگشت به صفحه اصلی',
 ];
 ?>

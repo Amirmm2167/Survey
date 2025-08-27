@@ -1,18 +1,8 @@
 /* --- Default Theme --- */
-/* Uses the user-provided color palette */
-
 :root {
-    --color-primary: #77b9df;   /* Light Blue - For buttons, links */
-    --color-background: #fdfbf5; /* A very light version of the beige/yellow */
-    --color-surface: #ffffff;   /* White - For panels and containers */
-    --color-text: #3d3d3d;       /* Dark Gray - For text */
-    --color-muted: #6c757d;      /* Standard muted gray */
-    --color-accent: #ff7452;    /* Red/Orange - For highlights, errors, accents */
-    --color-success: #bddb48;   /* Light Green - For success messages */
-    --border-color: #e8e8e8;    /* Light Gray */
-}
-
-/* Override for darker button hover */
-button:hover, a.button-link:hover {
-    background-color: #5a9ac6; /* A darker shade of the primary blue */
+    --color-primary: #007bff;
+    --color-background: #f8f9fa;
+    --color-surface: #ffffff;
+    --color-text: #212529;
+    --color-accent: #17a2b8;
 }

@@ -1,16 +1,8 @@
 /* --- Blue Theme --- */
-
 :root {
-    --color-primary: #007bff;   /* A classic, strong blue */
-    --color-background: #f4f8ff; /* A very light, almost white blue */
-    --color-surface: #ffffff;   /* White panels */
-    --color-text: #212529;       /* Standard dark text */
-    --color-muted: #6c757d;      /* Standard muted gray */
-    --color-accent: #17a2b8;    /* A complementary cyan/teal for accents */
-    --color-success: #28a745;   /* Green for success */
-    --border-color: #d6e4ff;    /* A light blue for borders */
-}
-
-button:hover, a.button-link:hover {
-    background-color: #0069d9;
+    --color-primary: #007bff;
+    --color-background: #f4f8ff;
+    --color-surface: #ffffff;
+    --color-text: #212529;
+    --color-accent: #17a2b8;
 }

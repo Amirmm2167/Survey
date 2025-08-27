@@ -1,8 +1,5 @@
 <?php
 require_once __DIR__ . '/core/session.php';
-
-// This is a public-facing page, so we load the header.
-// It will use the default theme.
 require_once __DIR__ . '/templates/header.php';
 ?>
 
@@ -45,8 +42,6 @@ require_once __DIR__ . '/templates/header.php';
     </div>
 </div>
 
-
-<!-- The actual login form that will be placed inside the modal -->
 <div id="login-form-content" style="display: none;">
     <form action="<?= site_url('api.php'); ?>" method="POST" id="login-form">
         <input type="hidden" name="action" value="login">
@@ -68,26 +63,25 @@ require_once __DIR__ . '/templates/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const loginModalBtn = document.getElementById('login-modal-btn');
-    const modalBody = document.getElementById('modal-body');
-    const loginFormContent = document.getElementById('login-form-content');
-    const modal = document.getElementById('generic-modal');
-    const closeBtn = modal.querySelector('.close-btn');
-
     if (loginModalBtn) {
         loginModalBtn.addEventListener('click', () => {
+            const modalBody = document.getElementById('modal-body');
+            const loginFormContent = document.getElementById('login-form-content');
             modalBody.innerHTML = loginFormContent.innerHTML;
             openModal('generic-modal');
 
-        const loginForm = document.getElementById('login-form');
-        if(loginForm) {
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                handleFormSubmit(this);
-            });
-        }
-    });
+            const loginForm = document.getElementById('login-form');
+            if(loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    handleFormSubmit(this);
+                });
+            }
+        });
     }
 
+    const modal = document.getElementById('generic-modal');
+    const closeBtn = modal.querySelector('.close-btn');
     closeBtn.addEventListener('click', () => closeModal('generic-modal'));
     window.addEventListener('click', (event) => {
         if (event.target == modal) {

@@ -13,7 +13,7 @@ require_once __DIR__ . '/../core/functions.php';
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="<?= site_url('public/css/style.css'); ?>">
     <?php
@@ -28,7 +28,6 @@ require_once __DIR__ . '/../core/functions.php';
         <div class="header-inner">
             <div class="header-logo">
                 <a href="<?= site_url(); ?>">
-                    <!-- Embedded Placeholder SVG Logo -->
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v2h-2zm0 4h2v6h-2z"/></svg>
                     <span><?= trans('site_title'); ?></span>
                 </a>

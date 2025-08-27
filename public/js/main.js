@@ -19,7 +19,6 @@ async function handleFormSubmit(form) {
         const formData = new FormData(form);
 
         // The form.action is now a full URL thanks to the site_url() helper.
-        // No need to reconstruct it in JavaScript.
         const response = await fetch(form.action, {
             method: form.method,
             body: formData
@@ -35,12 +34,10 @@ async function handleFormSubmit(form) {
             if (result.redirect) {
                 window.location.href = result.redirect;
             } else {
-                // Or maybe show a success message in the modal
                 alert(result.message || 'Success!');
-                location.reload(); // Simple way to reflect changes
+                location.reload();
             }
         } else {
-            // Display error message
             const errorElement = form.querySelector('.form-error');
             if (errorElement) {
                 errorElement.textContent = result.message || 'An unknown error occurred.';
@@ -54,7 +51,3 @@ async function handleFormSubmit(form) {
         alert('A network error occurred. Please try again.');
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    // General setup can go here, like attaching listeners to modal-trigger buttons
-});

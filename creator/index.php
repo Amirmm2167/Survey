@@ -1,38 +1,15 @@
 <?php
 require_once __DIR__ . '/../core/session.php';
 require_once __DIR__ . '/../core/functions.php';
-
-// Get DB connection
 $pdo = get_db_connection();
-
-// --- Authorization Check ---
-if (!isset($_SESSION['user_id'])) {
-    redirect(site_url());
-}
+if (!isset($_SESSION['user_id'])) { redirect(site_url()); }
 $user_id = $_SESSION['user_id'];
-
-// --- Fetch Creator-Specific Data ---
 $plan = get_user_plan($pdo, $user_id);
-$surveys = [];
-try {
-    $stmt = $pdo->prepare(
-       "SELECT s.id, s.unique_id, s.title, s.status, s.access_level, COUNT(DISTINCT r.id) as response_count
-        FROM surveys s
-        LEFT JOIN respondents r ON s.id = r.survey_id
-        WHERE s.creator_id = ?
-        GROUP BY s.id
-        ORDER BY s.created_at DESC"
-    );
-    $stmt->execute([$user_id]);
-    $surveys = $stmt->fetchAll();
-} catch (PDOException $e) { die("Error fetching surveys."); }
-
+$surveys = $pdo->query("SELECT s.id, s.unique_id, s.title, s.status, COUNT(DISTINCT r.id) as response_count FROM surveys s LEFT JOIN respondents r ON s.id = r.survey_id WHERE s.creator_id = $user_id GROUP BY s.id ORDER BY s.created_at DESC")->fetchAll();
 require_once __DIR__ . '/../templates/header.php';
 ?>
-
 <h1><?= trans('creator_dashboard'); ?></h1>
-<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>" id="logout-link"><?= trans('logout'); ?></a></p>
-
+<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>"><?= trans('logout'); ?></a></p>
 <div class="account-status">
     <h3><?= trans('account_status'); ?></h3>
     <?php if ($plan): ?>
@@ -77,20 +54,15 @@ require_once __DIR__ . '/../templates/header.php';
         </tbody>
     </table>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.delete-survey-btn').forEach(button => {
         button.addEventListener('click', function() {
             if (confirm('<?= trans('confirm_delete'); ?>')) {
-                const surveyId = this.dataset.surveyId;
                 const formData = new FormData();
                 formData.append('action', 'delete_survey');
-                formData.append('survey_id', surveyId);
-                fetch('<?= site_url('api.php'); ?>', {
-                    method: 'POST',
-                    body: formData
-                })
+                formData.append('survey_id', this.dataset.surveyId);
+                fetch('<?= site_url('api.php'); ?>', { method: 'POST', body: formData })
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 'success') {
@@ -104,7 +76,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
-
-<?php
-require_once __DIR__ . '/../templates/footer.php';
-?>
+<?php require_once __DIR__ . '/../templates/footer.php'; ?>

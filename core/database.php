@@ -25,9 +25,8 @@ function get_db_connection() {
 
             $pdo = new PDO($dsn, DB_USERNAME, DB_PASSWORD, $options);
         } catch (PDOException $e) {
-            // In a production environment, you would log this error and show a generic message.
-            // For now, we die to make debugging clear.
-            // In the future, this could redirect to 500.php
+            // In a production environment, this should redirect to the 500 error page.
+            // For now, die to make debugging clear during setup.
             die("Database connection failed: " . $e->getMessage());
         }
     }

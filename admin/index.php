@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../core/session.php';
 require_once __DIR__ . '/../core/functions.php';
 
-// Get DB connection
 $pdo = get_db_connection();
 
 // --- Authorization Check ---
@@ -10,10 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role_name'] !== 'admin') {
     redirect(site_url());
 }
 
-// This file now acts as a "controller" for the admin dashboard.
-// It will fetch data and then include the main layout file.
-
-// --- Fetch data for display (this will be for the new stats cards) ---
+// --- Fetch data for display ---
 $stats = [
     'total_users' => get_total_user_count($pdo),
     'total_surveys' => get_total_survey_count($pdo),
@@ -24,7 +20,6 @@ $stats = [
     'top_users_by_credit' => get_users_with_most_used_credits($pdo),
     'top_surveys_by_usage' => get_surveys_with_highest_credit_usage($pdo)
 ];
-
 
 // Define the content file to be included by the layout
 $page_content_file = __DIR__ . '/dashboard_content.php';

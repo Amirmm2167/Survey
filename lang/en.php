@@ -31,7 +31,7 @@ $lang = [
     'password' => 'Password',
     'login_button' => 'Log In',
 
-    // Admin Dashboard
+    // Admin Dashboard & User Management
     'admin_dashboard' => 'Admin Dashboard',
     'user_management' => 'User Management',
     'create_new_creator' => 'Create New Creator User',
@@ -57,6 +57,9 @@ $lang = [
     'status' => 'Status',
     'responses' => 'Responses',
     'no_surveys_found' => "You haven't created any surveys yet.",
+    'status_draft' => 'Draft',
+    'status_published' => 'Published',
+    'status_closed' => 'Closed',
 
     // Survey Creation/Editing
     'edit_survey' => 'Edit Survey',
@@ -69,9 +72,6 @@ $lang = [
     'questions' => 'Questions',
     'add_question' => 'Add Question',
     'save_survey' => 'Save Survey',
-    'status_draft' => 'Draft',
-    'status_published' => 'Published',
-    'status_closed' => 'Closed',
     'theme_settings' => 'Theme Settings',
     'survey_theme' => 'Survey Theme',
     'theme_none' => 'None (Use Site Default)',
@@ -126,5 +126,12 @@ $lang = [
 
     // Errors
     'error_content_not_found' => 'Error: Content file not found.',
+    'error_page_not_found' => 'Page Not Found',
+    'error_page_not_found_desc' => 'Sorry, the page you are looking for does not exist.',
+    'error_forbidden' => 'Forbidden',
+    'error_forbidden_desc' => 'Sorry, you do not have permission to access this page.',
+    'error_server' => 'Internal Server Error',
+    'error_server_desc' => 'Sorry, something went wrong on our end. We are looking into it.',
+    'go_homepage' => 'Go to Homepage',
 ];
 ?>

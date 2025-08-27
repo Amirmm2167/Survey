@@ -1,6 +1,6 @@
 <?php
 // This file is included by admin/index.php and is wrapped by admin/layout.php
-// The $stats variable is available from the parent script (admin/index.php).
+// The $stats variable is available from the parent script.
 ?>
 <h1><?= trans('admin_dashboard'); ?></h1>
 <p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>!</p>

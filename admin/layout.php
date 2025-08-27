@@ -13,7 +13,7 @@ require_once __DIR__ . '/../core/functions.php';
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="<?= site_url('public/css/admin.css'); ?>">
 </head>
@@ -35,7 +35,7 @@ require_once __DIR__ . '/../core/functions.php';
                     </ul>
                 </nav>
             </div>
-            <div>
+            <div class="sidebar-footer">
                 <a href="<?= site_url('logout.php'); ?>"><span class="nav-text"><?= trans('logout'); ?></span></a>
                 <button id="sidebar-toggle">&lt; &gt;</button>
             </div>
