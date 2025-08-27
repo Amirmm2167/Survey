@@ -1,6 +1,7 @@
 <?php
 // Every page that needs session and language support should include this.
 require_once __DIR__ . '/../core/localization.php';
+require_once __DIR__ . '/../core/functions.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= $current_lang; ?>" dir="<?= $page_direction; ?>">
