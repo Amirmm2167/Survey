@@ -66,7 +66,7 @@ switch ($action) {
         if (create_survey($pdo, $creator_id, $surveyData)) {
             $response['status'] = 'success';
             $response['message'] = 'Survey created successfully!';
-            $response['redirect'] = 'index.php';
+            $response['redirect'] = site_url('creator/');
         } else {
             $response['message'] = 'Failed to create survey due to a database error.';
         }
@@ -109,7 +109,7 @@ switch ($action) {
         if (save_custom_theme($pdo, $creator_id, $themeData)) {
             $response['status'] = 'success';
             $response['message'] = 'Theme saved successfully!';
-            $response['redirect'] = 'theme_manager.php';
+            $response['redirect'] = site_url('creator/theme_manager.php');
         } else {
             $response['message'] = 'Failed to save theme due to a database error.';
         }
@@ -148,7 +148,7 @@ switch ($action) {
         if (update_survey($pdo, $survey_id, $user_id, $surveyData)) {
             $response['status'] = 'success';
             $response['message'] = 'Survey updated successfully!';
-            $response['redirect'] = 'index.php';
+            $response['redirect'] = site_url('creator/');
         } else {
             $response['message'] = 'Failed to update survey.';
         }
@@ -168,7 +168,7 @@ switch ($action) {
         if (submit_survey_answers($pdo, $survey_id, $respondent_id, $question_count, $answers_data)) {
             $response['status'] = 'success';
             $response['message'] = 'Survey submitted successfully!';
-            $response['redirect'] = 'thank_you.php';
+            $response['redirect'] = site_url('thank_you.php');
         } else {
             $response['message'] = 'Failed to submit survey.';
         }

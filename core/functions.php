@@ -60,9 +60,9 @@ function get_user_by_identifier($pdo, $identifier) {
         "SELECT u.id, u.username, u.password_hash, r.name as role_name
          FROM users u
          JOIN roles r ON u.role_id = r.id
-         WHERE u.username = :identifier OR u.email = :identifier OR u.phone_number = :identifier"
+         WHERE u.username = ? OR u.email = ? OR u.phone_number = ?"
     );
-    $stmt->execute([':identifier' => $identifier]);
+    $stmt->execute([$identifier, $identifier, $identifier]);
     return $stmt->fetch();
 }
 

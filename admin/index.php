@@ -46,7 +46,7 @@ try {
 
 <h3><?= trans('create_new_creator'); ?></h3>
 <div class="form-message" style="display: none; margin-bottom: 10px;"></div>
-<form action="/api.php" method="POST" id="create-user-form">
+<form action="<?= site_url('api.php'); ?>" method="POST" id="create-user-form">
     <input type="hidden" name="action" value="create_user">
     <input type="hidden" name="role_id" value="<?= $creator_role_id; ?>">
     <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
