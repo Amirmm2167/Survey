@@ -1,6 +1,8 @@
 <?php
-// This layout file assumes that the session and core functions are already included.
-// It also assumes authorization has been checked.
+// This layout file requires the core functions and localization to work.
+require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../core/localization.php';
+require_once __DIR__ . '/../core/functions.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= $current_lang; ?>" dir="<?= $page_direction; ?>">

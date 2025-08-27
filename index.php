@@ -73,9 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('generic-modal');
     const closeBtn = modal.querySelector('.close-btn');
 
-    loginModalBtn.addEventListener('click', () => {
-        modalBody.innerHTML = loginFormContent.innerHTML;
-        openModal('generic-modal');
+    if (loginModalBtn) {
+        loginModalBtn.addEventListener('click', () => {
+            modalBody.innerHTML = loginFormContent.innerHTML;
+            openModal('generic-modal');
 
         const loginForm = document.getElementById('login-form');
         if(loginForm) {
