@@ -123,5 +123,8 @@ $lang = [
     // Thank You Page
     'thank_you' => 'Thank You!',
     'response_recorded' => 'Your response has been recorded successfully.',
+
+    // Errors
+    'error_content_not_found' => 'Error: Content file not found.',
 ];
 ?>

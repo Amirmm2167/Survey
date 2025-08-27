@@ -88,6 +88,53 @@
     margin-right: 250px;
 }
 
+/* --- Sidebar Toggle & Icons --- */
+.admin-sidebar .nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px; /* LTR default */
+    vertical-align: middle;
+    transition: margin 0.3s;
+}
+[dir="rtl"] .admin-sidebar .nav-icon {
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+#sidebar-toggle {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text);
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: auto;
+}
+
+/* Collapsed State */
+.admin-layout.sidebar-toggled .admin-sidebar {
+    width: 80px;
+}
+.admin-layout.sidebar-toggled .admin-sidebar h2,
+.admin-layout.sidebar-toggled .admin-sidebar .nav-text {
+    display: none;
+}
+.admin-layout.sidebar-toggled .admin-sidebar .nav-icon {
+    margin: 0 auto; /* Center the icon */
+}
+[dir="ltr"].sidebar-toggled .admin-main-content {
+    margin-left: 80px;
+}
+[dir="rtl"].sidebar-toggled .admin-main-content {
+    margin-right: 80px;
+}
+
+/* Smooth transitions */
+.admin-sidebar, .admin-main-content {
+    transition: all 0.3s ease-in-out;
+}
+
+
 /* --- Admin Dashboard Specifics --- */
 .stats-grid {
     display: grid;

@@ -55,6 +55,3 @@
         </ul>
     </div>
 </div>
-
-<hr>
-<p>Note: The user creation form will be moved to a dedicated 'User Management' page in a future update.</p>

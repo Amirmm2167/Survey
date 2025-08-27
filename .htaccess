@@ -1,25 +1,40 @@
-# Deny access to sensitive directories
-# --- Custom Error Pages ---
+# ==============================================================================
+# Custom Error Pages
+# ==============================================================================
+# The path should be an absolute path from the domain's document root.
+# Given the site is at mohman.ir/survey/, this path should be correct.
+# If this does not work, it is likely due to a server configuration
+# (e.g., AllowOverride settings) that prevents this directive from working.
 ErrorDocument 403 /survey/403.php
 ErrorDocument 404 /survey/404.php
 ErrorDocument 500 /survey/500.php
 
+
+# ==============================================================================
+# Main Rewrite Engine
+# ==============================================================================
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # Deny direct access to sensitive folders
+  # Set the base path for rewriting if in a subdirectory.
+  # This can sometimes help resolve pathing issues.
+  RewriteBase /survey/
+
+  # ============================================================================
+  # Security: Deny direct access to sensitive folders
+  # ============================================================================
   RewriteRule ^(config|core|lang|templates)/ - [F,L]
 
-  # --- Clean URL Handling ---
+  # ============================================================================
+  # URL Rewriting for Clean URLs
+  # ============================================================================
   # First, ensure the request is not for an existing file or directory
+  # This prevents the rule from affecting asset files like CSS or JS
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
 
-  # Route survey requests (16 hex chars) to survey.php
+  # Route secure survey requests (16 hex chars) to survey.php
+  # e.g., /survey/a1b2c3d4e5f6a7b8 -> /survey/survey.php?uid=a1b2c3d4e5f6a7b8
   RewriteRule ^([a-f0-9]{16})$ survey.php?uid=$1 [L,QSA]
-
-  # Handle other pages (optional, but good practice)
-  # For example, to route /login to login.php
-  # RewriteRule ^login/?$ login.php [L,QSA]
 
 </IfModule>

@@ -123,5 +123,8 @@ $lang = [
     // Thank You Page
     'thank_you' => 'متشکریم!',
     'response_recorded' => 'پاسخ شما با موفقیت ثبت شد.',
+
+    // Errors
+    'error_content_not_found' => 'خطا: فایل محتوا یافت نشد.',
 ];
 ?>
