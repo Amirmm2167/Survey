@@ -5,7 +5,9 @@ header('Content-Type: application/json');
 // Core dependencies
 require_once __DIR__ . '/core/session.php';
 require_once __DIR__ . '/core/functions.php';
-// The $pdo object is available from database.php, included via functions.php
+
+// Get the database connection
+$pdo = get_db_connection();
 
 // Get the requested action
 $action = $_POST['action'] ?? $_GET['action'] ?? '';

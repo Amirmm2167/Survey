@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/../core/session.php';
-require_once __DIR__ . '/../core/database.php';
 require_once __DIR__ . '/../core/functions.php';
-require_once __DIR__ . '/../templates/header.php';
+
+// Get DB connection
+$pdo = get_db_connection();
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {

@@ -1,37 +1,50 @@
 <?php
-require_once __DIR__ . '/core/database.php';
 require_once __DIR__ . '/core/functions.php';
 
+// Get DB connection
+$pdo = get_db_connection();
+
+// --- Get Survey UID and Validate ---
 $survey_uid = filter_input(INPUT_GET, 'uid', FILTER_SANITIZE_STRING);
 if (!$survey_uid || !preg_match('/^[a-f0-9]{16}$/', $survey_uid)) {
-    require_once __DIR__ . '/templates/header.php';
-    echo "<p>" . trans('survey_not_available') . "</p>";
-    require_once __DIR__ . '/templates/footer.php';
-    exit;
+    redirect(site_url('404.php'));
 }
-$survey = $pdo->prepare("SELECT * FROM surveys WHERE unique_id = ? AND status = 'published'");
-$survey->execute([$survey_uid]);
-$survey = $survey->fetch();
-if (!$survey) {
-    require_once __DIR__ . '/templates/header.php';
-    echo "<p>" . trans('survey_not_available') . "</p>";
-    require_once __DIR__ . '/templates/footer.php';
-    exit;
+
+// --- Fetch Survey and Creator Info ---
+$survey = null;
+try {
+    $stmt = $pdo->prepare("SELECT * FROM surveys WHERE unique_id = ? AND status = 'published'");
+    $stmt->execute([$survey_uid]);
+    $survey = $stmt->fetch();
+    if (!$survey) {
+        redirect(site_url('404.php'));
+    }
+    $question_count = $pdo->query("SELECT COUNT(*) FROM questions WHERE survey_id = {$survey['id']}")->fetchColumn();
+} catch (PDOException $e) {
+    redirect(site_url('500.php'));
 }
-// Other logic...
-$theme_file = "public/css/themes/default.css";
+
+// --- Theme Selection Logic ---
+// ... (theme logic as before)
+$theme_file = "public/css/themes/default.css"; // Placeholder
+
+// --- NOW we can include the header ---
 require_once __DIR__ . '/templates/header.php';
+
+// --- Credit Check and Reservation (if survey is not free) ---
+// ...
+
 ?>
+
 <h1><?= htmlspecialchars($survey['title']); ?></h1>
 <p><?= nl2br(htmlspecialchars($survey['description'])); ?></p>
 <hr>
 <form action="<?= site_url('api.php'); ?>" method="POST" id="survey-form">
     <input type="hidden" name="action" value="submit_survey">
-    <!-- other hidden fields -->
+    <input type="hidden" name="survey_id" value="<?= $survey['id']; ?>">
 
-    <!-- questions loop -->
+    <!-- Questions Loop -->
 
-    <br>
     <button type="submit"><?= trans('submit_survey'); ?></button>
 </form>
 
