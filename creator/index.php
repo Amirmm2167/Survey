@@ -76,7 +76,8 @@ require_once __DIR__ . '/../templates/header.php';
                         <td>
                             <a href="../survey.php?id=<?= $survey['id']; ?>" target="_blank">View</a> |
                             <a href="view_results.php?id=<?= $survey['id']; ?>">Results</a> |
-                            <a href="edit_survey.php?id=<?= $survey['id']; ?>">Edit</a>
+                            <a href="edit_survey.php?id=<?= $survey['id']; ?>">Edit</a> |
+                            <button class="delete-survey-btn" data-survey-id="<?= $survey['id']; ?>">Delete</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -84,6 +85,39 @@ require_once __DIR__ . '/../templates/header.php';
         </tbody>
     </table>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.delete-survey-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
+                const surveyId = this.dataset.surveyId;
+                const formData = new FormData();
+                formData.append('action', 'delete_survey');
+                formData.append('survey_id', surveyId);
+
+                fetch('../api.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        // Reload the page to show the updated list
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the survey.');
+                });
+            }
+        });
+    });
+});
+</script>
 
 <?php
 require_once __DIR__ . '/../templates/footer.php';

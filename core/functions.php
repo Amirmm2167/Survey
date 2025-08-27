@@ -39,17 +39,17 @@ function get_flash_message($key) {
 /**
  * Fetches a user by their username.
  * @param PDO $pdo The database connection object.
- * @param string $username The username to find.
+ * @param string $identifier The username, email, or phone number to find.
  * @return array|false The user data, or false if not found.
  */
-function get_user_by_username($pdo, $username) {
+function get_user_by_identifier($pdo, $identifier) {
     $stmt = $pdo->prepare(
         "SELECT u.id, u.username, u.password_hash, r.name as role_name
          FROM users u
          JOIN roles r ON u.role_id = r.id
-         WHERE u.username = ?"
+         WHERE u.username = :identifier OR u.email = :identifier OR u.phone_number = :identifier"
     );
-    $stmt->execute([$username]);
+    $stmt->execute([':identifier' => $identifier]);
     return $stmt->fetch();
 }
 
@@ -86,7 +86,7 @@ function verify_survey_ownership($pdo, $survey_id, $user_id) {
 /**
  * Creates a new user with their subscription and wallet in a transaction.
  * @param PDO $pdo
- * @param array $userData Contains username, email, password, role_id, plan_id, initial_credits
+ * @param array $userData Contains username, email, phone_number, password, role_id, plan_id, initial_credits
  * @return bool True on success, false on failure.
  */
 function create_user($pdo, $userData) {
@@ -97,8 +97,8 @@ function create_user($pdo, $userData) {
         $password_hash = password_hash($userData['password'], PASSWORD_DEFAULT);
 
         // 2. Insert into `users` table
-        $stmt = $pdo->prepare("INSERT INTO users (username, email, password_hash, role_id) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$userData['username'], $userData['email'], $password_hash, $userData['role_id']]);
+        $stmt = $pdo->prepare("INSERT INTO users (username, email, phone_number, password_hash, role_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$userData['username'], $userData['email'], $userData['phone_number'], $password_hash, $userData['role_id']]);
         $user_id = $pdo->lastInsertId();
 
         // 3. Insert into `subscriptions` table (e.g., for 1 month)
@@ -284,6 +284,24 @@ function submit_survey_answers($pdo, $survey_id, $respondent_id, $question_count
     } catch (PDOException $e) {
         $pdo->rollBack();
         // error_log('Survey submission failed: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Deletes a survey, ensuring the user is the owner.
+ * @param PDO $pdo
+ * @param int $survey_id
+ * @param int $user_id
+ * @return bool True on success, false on failure.
+ */
+function delete_survey($pdo, $survey_id, $user_id) {
+    // verify_survey_ownership is called in the API before this function
+    try {
+        $stmt = $pdo->prepare("DELETE FROM surveys WHERE id = ? AND creator_id = ?");
+        return $stmt->execute([$survey_id, $user_id]);
+    } catch (PDOException $e) {
+        // error_log("Survey deletion failed: " . $e->getMessage());
         return false;
     }
 }

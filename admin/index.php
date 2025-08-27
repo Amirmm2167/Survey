@@ -16,7 +16,7 @@ require_once __DIR__ . '/../templates/header.php';
 $users = [];
 try {
     $stmt = $pdo->query(
-        "SELECT u.id, u.username, u.email, u.created_at, r.name as role_name, p.name as plan_name
+        "SELECT u.id, u.username, u.email, u.phone_number, u.created_at, r.name as role_name, p.name as plan_name
          FROM users u
          JOIN roles r ON u.role_id = r.id
          LEFT JOIN subscriptions s ON u.id = s.user_id
@@ -78,7 +78,11 @@ if (isset($_SESSION['user_creation_error'])) {
     </div>
     <div>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email">
+    </div>
+    <div>
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number">
     </div>
     <div>
         <label for="password">Password:</label>
@@ -110,6 +114,7 @@ if (isset($_SESSION['user_creation_error'])) {
             <th>ID</th>
             <th>Username</th>
             <th>Email</th>
+            <th>Phone Number</th>
             <th>Role</th>
             <th>Plan</th>
             <th>Created At</th>
@@ -118,14 +123,15 @@ if (isset($_SESSION['user_creation_error'])) {
     <tbody>
         <?php if (empty($users)): ?>
             <tr>
-                <td colspan="6">No users found.</td>
+                <td colspan="7">No users found.</td>
             </tr>
         <?php else: ?>
             <?php foreach ($users as $user): ?>
                 <tr>
                     <td><?= $user['id']; ?></td>
                     <td><?= htmlspecialchars($user['username']); ?></td>
-                    <td><?= htmlspecialchars($user['email']); ?></td>
+                    <td><?= htmlspecialchars($user['email'] ?? 'N/A'); ?></td>
+                    <td><?= htmlspecialchars($user['phone_number'] ?? 'N/A'); ?></td>
                     <td><?= htmlspecialchars($user['role_name']); ?></td>
                     <td><?= htmlspecialchars($user['plan_name'] ?? 'N/A'); ?></td>
                     <td><?= $user['created_at']; ?></td>

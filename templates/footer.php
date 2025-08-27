@@ -10,6 +10,23 @@
         </div>
     </div>
 
-    <script src="public/js/main.js"></script>
+    <script src="/public/js/main.js"></script>
+
+    <!-- Floating Language Switcher -->
+    <div class="language-switcher">
+        <a id="lang-en" href="#">EN</a> | <a id="lang-fa" href="#">FA</a>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function setLangUrl(lang) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', lang);
+            return url.toString();
+        }
+        document.getElementById('lang-en').href = setLangUrl('en');
+        document.getElementById('lang-fa').href = setLangUrl('fa');
+    });
+    </script>
 </body>
 </html>

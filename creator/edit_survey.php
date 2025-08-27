@@ -1,7 +1,6 @@
 <?php
-require_once __DIR__ . '/../core/database.php';
-require_once __DIR__ . '/../core/database.php';
 require_once __DIR__ . '/../core/session.php';
+require_once __DIR__ . '/../core/database.php';
 require_once __DIR__ . '/../templates/header.php';
 
 // --- Authorization Check ---
@@ -14,7 +13,7 @@ $survey_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$survey_id) {
     echo "<p>No survey specified.</p>";
-    require_once __DIR__ . '/templates/footer.php';
+    require_once __DIR__ . '/../templates/footer.php';
     exit;
 }
 
@@ -27,12 +26,10 @@ try {
 
     if (!$survey) {
         echo "<p>Survey not found or you do not have permission to edit it.</p>";
-        require_once __DIR__ . '/templates/footer.php';
+        require_once __DIR__ . '/../templates/footer.php';
         exit;
     }
-} catch (PDOException $e) {
-    die("Error fetching survey data.");
-}
+} catch (PDOException $e) { die("Error fetching survey data."); }
 
 // --- Fetch themes for the dropdown ---
 $custom_themes = [];
@@ -40,14 +37,9 @@ try {
     $stmt = $pdo->prepare("SELECT id, theme_name FROM custom_themes WHERE creator_id = ?");
     $stmt->execute([$user_id]);
     $custom_themes = $stmt->fetchAll();
-} catch (PDOException $e) {
-    die("Error fetching custom themes.");
-}
+} catch (PDOException $e) { die("Error fetching custom themes."); }
 
-$predefined_themes = [
-    1 => 'Default', 2 => 'Cosmic', 3 => 'Dark', 4 => 'Green', 5 => 'Blue'
-];
-
+$predefined_themes = [1 => 'Default', 2 => 'Cosmic', 3 => 'Dark', 4 => 'Green', 5 => 'Blue'];
 ?>
 
 <h1>Edit Survey: <?= htmlspecialchars($survey['title']); ?></h1>
@@ -55,9 +47,10 @@ $predefined_themes = [
 
 <hr>
 
-<form action="../api.php" method="POST">
+<form action="../api.php" method="POST" id="edit-survey-form">
     <input type="hidden" name="action" value="update_survey">
     <input type="hidden" name="survey_id" value="<?= $survey_id; ?>">
+    <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
 
     <div>
         <label for="title">Survey Title:</label>
@@ -85,21 +78,15 @@ $predefined_themes = [
         <label for="theme_selection">Survey Theme:</label>
         <select id="theme_selection" name="theme_selection">
             <option value="none">None (Use Site Default)</option>
-
             <optgroup label="Predefined Themes">
                 <?php foreach ($predefined_themes as $id => $name): ?>
-                    <option value="predefined-<?= $id; ?>" <?= $survey['theme_id'] == $id ? 'selected' : ''; ?>>
-                        <?= $name; ?>
-                    </option>
+                    <option value="predefined-<?= $id; ?>" <?= $survey['theme_id'] == $id ? 'selected' : ''; ?>><?= $name; ?></option>
                 <?php endforeach; ?>
             </optgroup>
-
             <?php if (!empty($custom_themes)): ?>
             <optgroup label="Your Custom Themes">
                  <?php foreach ($custom_themes as $theme): ?>
-                    <option value="custom-<?= $theme['id']; ?>" <?= $survey['custom_theme_id'] == $theme['id'] ? 'selected' : ''; ?>>
-                        <?= htmlspecialchars($theme['theme_name']); ?>
-                    </option>
+                    <option value="custom-<?= $theme['id']; ?>" <?= $survey['custom_theme_id'] == $theme['id'] ? 'selected' : ''; ?>><?= htmlspecialchars($theme['theme_name']); ?></option>
                 <?php endforeach; ?>
             </optgroup>
             <?php endif; ?>
@@ -111,6 +98,13 @@ $predefined_themes = [
     <button type="submit">Save Changes</button>
 </form>
 
+<script>
+document.getElementById('edit-survey-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleFormSubmit(this);
+});
+</script>
+
 <?php
-require_once __DIR__ . '/templates/footer.php';
+require_once __DIR__ . '/../templates/footer.php';
 ?>

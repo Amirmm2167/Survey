@@ -1,13 +1,6 @@
 <?php
 require_once __DIR__ . '/core/session.php';
 
-// If user is already logged in, redirect them to their dashboard
-if (isset($_SESSION['user_id'])) {
-    $dashboard = ($_SESSION['role_name'] === 'admin') ? 'admin/' : 'creator/';
-    header("Location: {$dashboard}");
-    exit;
-}
-
 // This is a public-facing page, so we load the header.
 // It will use the default theme.
 require_once __DIR__ . '/templates/header.php';
@@ -26,7 +19,13 @@ require_once __DIR__ . '/templates/header.php';
     <h1>The Professional Survey Platform</h1>
     <p>Create, share, and analyze surveys with ease. Get the insights you need.</p>
     <br>
-    <button id="login-modal-btn" class="button-link">Get Started / Login</button>
+    <?php if (isset($_SESSION['user_id'])):
+        $dashboard_url = ($_SESSION['role_name'] === 'admin') ? 'admin/' : 'creator/';
+    ?>
+        <a href="<?= $dashboard_url ?>" class="button-link">Go to Your Dashboard</a>
+    <?php else: ?>
+        <button id="login-modal-btn" class="button-link">Get Started / Login</button>
+    <?php endif; ?>
 </div>
 
 <hr>

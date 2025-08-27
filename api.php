@@ -15,15 +15,15 @@ $response = ['status' => 'error', 'message' => 'Invalid action.'];
 
 switch ($action) {
     case 'login':
-        $username = $_POST['username'] ?? '';
+        $identifier = $_POST['username'] ?? ''; // The form field is still named 'username' for simplicity
         $password = $_POST['password'] ?? '';
 
-        if (empty($username) || empty($password)) {
-            $response['message'] = 'Username and password are required.';
+        if (empty($identifier) || empty($password)) {
+            $response['message'] = 'Login identifier and password are required.';
             break;
         }
 
-        $user = get_user_by_username($pdo, $username);
+        $user = get_user_by_identifier($pdo, $identifier);
 
         if ($user && password_verify($password, $user['password_hash'])) {
             // Authentication successful
@@ -172,6 +172,27 @@ switch ($action) {
         }
         break;
 
+    case 'delete_survey':
+        if (!isset($_SESSION['user_id'])) {
+            $response['message'] = 'Unauthorized.';
+            break;
+        }
+        $user_id = $_SESSION['user_id'];
+        $survey_id = filter_input(INPUT_POST, 'survey_id', FILTER_VALIDATE_INT);
+
+        if (!$survey_id || !verify_survey_ownership($pdo, $survey_id, $user_id)) {
+            $response['message'] = "Survey not found or permission denied.";
+            break;
+        }
+
+        if (delete_survey($pdo, $survey_id, $user_id)) {
+            $response['status'] = 'success';
+            $response['message'] = 'Survey deleted successfully!';
+        } else {
+            $response['message'] = 'Failed to delete survey.';
+        }
+        break;
+
     // Other cases for 'save_theme', 'create_user', etc., will be added here.
     case 'create_user':
         // Admin-only action
@@ -180,9 +201,13 @@ switch ($action) {
             break;
         }
 
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone_number'] ?? '');
+
         $userData = [
             'username' => trim($_POST['username'] ?? ''),
-            'email' => trim($_POST['email'] ?? ''),
+            'email' => !empty($email) ? $email : null,
+            'phone_number' => !empty($phone) ? $phone : null,
             'password' => $_POST['password'] ?? '',
             'role_id' => filter_var($_POST['role_id'], FILTER_VALIDATE_INT),
             'plan_id' => filter_var($_POST['plan_id'], FILTER_VALIDATE_INT),
@@ -190,14 +215,14 @@ switch ($action) {
         ];
 
         // Basic validation
-        if (empty($userData['username']) || empty($userData['email']) || empty($userData['password']) || !$userData['role_id'] || !$userData['plan_id']) {
-            $response['message'] = 'All fields are required.';
+        if (empty($userData['username']) || (empty($userData['email']) && empty($userData['phone_number'])) || empty($userData['password']) || !$userData['role_id'] || !$userData['plan_id']) {
+            $response['message'] = 'Username, Password, Plan, and either Email or Phone Number are required.';
             break;
         }
 
-        // Check for existing user (could be another function)
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-        $stmt->execute([$userData['username'], $userData['email']]);
+        // Check for existing user
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ? OR phone_number = ?");
+        $stmt->execute([$userData['username'], $userData['email'], $userData['phone_number']]);
         if ($stmt->fetch()) {
             $response['message'] = 'Username or email already exists.';
             break;
