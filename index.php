@@ -16,15 +16,15 @@ require_once __DIR__ . '/templates/header.php';
 </style>
 
 <div class="hero">
-    <h1>The Professional Survey Platform</h1>
-    <p>Create, share, and analyze surveys with ease. Get the insights you need.</p>
+    <h1><?= trans('landing_title'); ?></h1>
+    <p><?= trans('landing_subtitle'); ?></p>
     <br>
     <?php if (isset($_SESSION['user_id'])):
         $dashboard_url = ($_SESSION['role_name'] === 'admin') ? 'admin/' : 'creator/';
     ?>
-        <a href="<?= $dashboard_url ?>" class="button-link">Go to Your Dashboard</a>
+        <a href="<?= site_url($dashboard_url) ?>" class="button-link"><?= trans('dashboard'); ?></a>
     <?php else: ?>
-        <button id="login-modal-btn" class="button-link">Get Started / Login</button>
+        <button id="login-modal-btn" class="button-link"><?= trans('get_started_login'); ?></button>
     <?php endif; ?>
 </div>
 
@@ -32,16 +32,16 @@ require_once __DIR__ . '/templates/header.php';
 
 <div class="features">
     <div class="feature">
-        <h3>Powerful Survey Builder</h3>
-        <p>Create surveys with various question types, from simple text to multiple choice.</p>
+        <h3><?= trans('feature_builder_title'); ?></h3>
+        <p><?= trans('feature_builder_desc'); ?></p>
     </div>
     <div class="feature">
-        <h3>Custom Theming</h3>
-        <p>Match your brand with custom themes, colors, and fonts for your surveys.</p>
+        <h3><?= trans('feature_theming_title'); ?></h3>
+        <p><?= trans('feature_theming_desc'); ?></p>
     </div>
     <div class="feature">
-        <h3>Actionable Insights</h3>
-        <p>View your results in real-time and export your data for deep analysis.</p>
+        <h3><?= trans('feature_insights_title'); ?></h3>
+        <p><?= trans('feature_insights_desc'); ?></p>
     </div>
 </div>
 

@@ -1,11 +1,25 @@
 # Deny access to sensitive directories
+# --- Custom Error Pages ---
+ErrorDocument 403 /survey/403.php
+ErrorDocument 404 /survey/404.php
+ErrorDocument 500 /survey/500.php
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteRule ^(config|core)/ - [F,L]
-</IfModule>
 
-# Fallback for systems without mod_rewrite
-<IfModule !mod_rewrite.c>
-  Order allow,deny
-  Deny from all
+  # Deny direct access to sensitive folders
+  RewriteRule ^(config|core|lang|templates)/ - [F,L]
+
+  # --- Clean URL Handling ---
+  # First, ensure the request is not for an existing file or directory
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Route survey requests (16 hex chars) to survey.php
+  RewriteRule ^([a-f0-9]{16})$ survey.php?uid=$1 [L,QSA]
+
+  # Handle other pages (optional, but good practice)
+  # For example, to route /login to login.php
+  # RewriteRule ^login/?$ login.php [L,QSA]
+
 </IfModule>

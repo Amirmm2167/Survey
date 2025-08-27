@@ -11,7 +11,10 @@ require_once __DIR__ . '/database.php';
  * @return string The full URL.
  */
 function site_url($path = '') {
-    return BASE_URL . '/' . ltrim($path, '/');
+    // A more robust way to join the base URL and the path
+    $base = rtrim(BASE_URL, '/');
+    $path = ltrim($path, '/');
+    return $base . '/' . $path;
 }
 
 /**
@@ -143,11 +146,14 @@ function create_survey($pdo, $creator_id, $surveyData) {
     try {
         $pdo->beginTransaction();
 
+        // Generate a unique 16-digit hex ID
+        $unique_id = bin2hex(random_bytes(8));
+
         $stmt = $pdo->prepare(
-            "INSERT INTO surveys (creator_id, title, description, access_level, access_code, status)
-             VALUES (?, ?, ?, ?, ?, 'draft')"
+            "INSERT INTO surveys (creator_id, unique_id, title, description, access_level, access_code, status)
+             VALUES (?, ?, ?, ?, ?, ?, 'draft')"
         );
-        $stmt->execute([$creator_id, $surveyData['title'], $surveyData['description'], $surveyData['access_level'], $surveyData['access_code']]);
+        $stmt->execute([$creator_id, $unique_id, $surveyData['title'], $surveyData['description'], $surveyData['access_level'], $surveyData['access_code']]);
         $survey_id = $pdo->lastInsertId();
 
         foreach ($surveyData['questions'] as $q_index => $question) {

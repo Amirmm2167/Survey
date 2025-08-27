@@ -1,18 +1,16 @@
 <?php
 require_once __DIR__ . '/../core/session.php';
 require_once __DIR__ . '/../core/database.php';
+require_once __DIR__ . '/../core/functions.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id']) || $_SESSION['role_name'] !== 'admin') {
-    header('Location: ../index.php'); // Redirect to main landing page
-    exit;
+    redirect(site_url());
 }
 
-// The header must be included AFTER the auth check and potential redirect
 require_once __DIR__ . '/../templates/header.php';
 
 // --- Fetch data for display ---
-// Fetch all users with their roles and subscription plan
 $users = [];
 try {
     $stmt = $pdo->query(
@@ -24,63 +22,50 @@ try {
          ORDER BY u.created_at DESC"
     );
     $users = $stmt->fetchAll();
-} catch (PDOException $e) {
-    // In a real app, log this error
-    echo "Error fetching users: " . $e->getMessage();
-}
+} catch (PDOException $e) { die("Error fetching users: " . $e->getMessage()); }
 
-// Fetch all plans for the creation form dropdown
 $plans = [];
 try {
     $plans = $pdo->query("SELECT id, name, level FROM plans ORDER BY level ASC")->fetchAll();
-} catch (PDOException $e) {
-    echo "Error fetching plans: " . $e->getMessage();
-}
+} catch (PDOException $e) { die("Error fetching plans: " . $e->getMessage()); }
 
-// Fetch the creator role ID
 $creator_role_id = null;
 try {
     $stmt = $pdo->prepare("SELECT id FROM roles WHERE name = 'creator'");
     $stmt->execute();
     $creator_role_id = $stmt->fetchColumn();
-} catch (PDOException $e) {
-    echo "Error fetching role id: " . $e->getMessage();
-}
-
+} catch (PDOException $e) { die("Error fetching role id: " . $e->getMessage()); }
 ?>
 
 <h1><?= trans('admin_dashboard'); ?></h1>
 <p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>"><?= trans('logout'); ?></a></p>
-
 <hr>
+<h2><?= trans('user_management'); ?></h2>
 
-<h2>User Management</h2>
-
-<!-- Section to Create New User -->
-<h3>Create New Creator User</h3>
+<h3><?= trans('create_new_creator'); ?></h3>
 <div class="form-message" style="display: none; margin-bottom: 10px;"></div>
 <form action="/api.php" method="POST" id="create-user-form">
     <input type="hidden" name="action" value="create_user">
     <input type="hidden" name="role_id" value="<?= $creator_role_id; ?>">
     <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
     <div>
-        <label for="username">Username:</label>
+        <label for="username"><?= trans('username'); ?></label>
         <input type="text" id="username" name="username" required>
     </div>
     <div>
-        <label for="email">Email:</label>
+        <label for="email"><?= trans('email'); ?></label>
         <input type="email" id="email" name="email">
     </div>
     <div>
-        <label for="phone_number">Phone Number:</label>
+        <label for="phone_number"><?= trans('phone_number'); ?></label>
         <input type="text" id="phone_number" name="phone_number">
     </div>
     <div>
-        <label for="password">Password:</label>
+        <label for="password"><?= trans('password'); ?></label>
         <input type="password" id="password" name="password" required>
     </div>
     <div>
-        <label for="plan_id">Subscription Plan:</label>
+        <label for="plan_id"><?= trans('subscription_plan'); ?></label>
         <select id="plan_id" name="plan_id" required>
             <?php foreach ($plans as $plan): ?>
                 <option value="<?= $plan['id']; ?>"><?= htmlspecialchars($plan['name']); ?> (Level <?= $plan['level']; ?>)</option>
@@ -88,33 +73,30 @@ try {
         </select>
     </div>
     <div>
-        <label for="initial_credits">Initial Credits:</label>
+        <label for="initial_credits"><?= trans('initial_credits'); ?></label>
         <input type="number" id="initial_credits" name="initial_credits" value="0" required>
     </div>
     <br>
-    <button type="submit">Create User</button>
+    <button type="submit"><?= trans('create_user'); ?></button>
 </form>
-
 <hr>
-
-<!-- Section to View All Users -->
-<h3>All Users</h3>
-<table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
+<h3><?= trans('all_users'); ?></h3>
+<table>
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Role</th>
-            <th>Plan</th>
-            <th>Created At</th>
+            <th><?= trans('user_id'); ?></th>
+            <th><?= trans('username'); ?></th>
+            <th><?= trans('email'); ?></th>
+            <th><?= trans('phone_number'); ?></th>
+            <th><?= trans('role'); ?></th>
+            <th><?= trans('plan'); ?></th>
+            <th><?= trans('created_at'); ?></th>
         </tr>
     </thead>
     <tbody>
         <?php if (empty($users)): ?>
             <tr>
-                <td colspan="7">No users found.</td>
+                <td colspan="7"><?= trans('no_users_found'); ?></td>
             </tr>
         <?php else: ?>
             <?php foreach ($users as $user): ?>

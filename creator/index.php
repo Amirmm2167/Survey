@@ -5,17 +5,16 @@ require_once __DIR__ . '/../core/functions.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    redirect('../index.php');
+    redirect(site_url());
 }
 $user_id = $_SESSION['user_id'];
 
 // --- Fetch Creator-Specific Data ---
 $plan = get_user_plan($pdo, $user_id);
-// Additional data fetching...
 $surveys = [];
 try {
     $stmt = $pdo->prepare(
-       "SELECT s.id, s.title, s.status, s.access_level, COUNT(DISTINCT r.id) as response_count
+       "SELECT s.id, s.unique_id, s.title, s.status, s.access_level, COUNT(DISTINCT r.id) as response_count
         FROM surveys s
         LEFT JOIN respondents r ON s.id = r.survey_id
         WHERE s.creator_id = ?
@@ -24,60 +23,51 @@ try {
     );
     $stmt->execute([$user_id]);
     $surveys = $stmt->fetchAll();
-} catch (PDOException $e) {
-    die("Error fetching surveys.");
-}
+} catch (PDOException $e) { die("Error fetching surveys."); }
 
-// This needs to come AFTER data fetching and auth checks
 require_once __DIR__ . '/../templates/header.php';
 ?>
 
 <h1><?= trans('creator_dashboard'); ?></h1>
-<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>" id="logout-link">Logout</a></p>
+<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>" id="logout-link"><?= trans('logout'); ?></a></p>
 
-<!-- Account Status Section -->
 <div class="account-status">
-    <h3>Account Status</h3>
+    <h3><?= trans('account_status'); ?></h3>
     <?php if ($plan): ?>
-        <p><strong>Plan:</strong> <?= htmlspecialchars($plan['name']); ?></p>
+        <p><strong><?= trans('plan'); ?>:</strong> <?= htmlspecialchars($plan['name']); ?></p>
         <?php if ($plan['custom_theme_limit'] > 0): ?>
-            <p><a href="<?= site_url('creator/theme_manager.php'); ?>">Manage Your Custom Themes</a></p>
+            <p><a href="<?= site_url('creator/theme_manager.php'); ?>"><?= trans('manage_themes'); ?></a></p>
         <?php endif; ?>
-    <?php else: ?>
-        <p>You do not have an active subscription. Please contact an administrator.</p>
     <?php endif; ?>
 </div>
-
 <hr>
-
-<!-- Survey Management Section -->
 <div class="survey-management">
-    <h2>My Surveys</h2>
-    <a href="<?= site_url('creator/create_survey.php'); ?>" class="button-link">+ Create New Survey</a>
+    <h2><?= trans('my_surveys'); ?></h2>
+    <a href="<?= site_url('creator/create_survey.php'); ?>" class="button-link">+ <?= trans('create_new_survey'); ?></a>
     <br><br>
     <table>
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Responses</th>
-                <th>Actions</th>
+                <th><?= trans('survey_title'); ?></th>
+                <th><?= trans('status'); ?></th>
+                <th><?= trans('responses'); ?></th>
+                <th><?= trans('actions'); ?></th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($surveys)): ?>
-                <tr><td colspan="4">You haven't created any surveys yet.</td></tr>
+                <tr><td colspan="4"><?= trans('no_surveys_found'); ?></td></tr>
             <?php else: ?>
                 <?php foreach ($surveys as $survey): ?>
                     <tr>
                         <td><?= htmlspecialchars($survey['title']); ?></td>
-                        <td><?= ucfirst(htmlspecialchars($survey['status'])); ?></td>
+                        <td><?= trans('status_' . strtolower($survey['status'])); ?></td>
                         <td><?= $survey['response_count']; ?></td>
                         <td>
-                            <a href="<?= site_url('survey.php?id=' . $survey['id']); ?>" target="_blank">View</a> |
-                            <a href="<?= site_url('creator/view_results.php?id=' . $survey['id']); ?>">Results</a> |
-                            <a href="<?= site_url('creator/edit_survey.php?id=' . $survey['id']); ?>">Edit</a> |
-                            <button class="delete-survey-btn" data-survey-id="<?= $survey['id']; ?>">Delete</button>
+                            <a href="<?= site_url($survey['unique_id']); ?>" target="_blank"><?= trans('view'); ?></a> |
+                            <a href="<?= site_url('creator/view_results.php?id=' . $survey['id']); ?>"><?= trans('results'); ?></a> |
+                            <a href="<?= site_url('creator/edit_survey.php?id=' . $survey['id']); ?>"><?= trans('edit'); ?></a> |
+                            <button class="delete-survey-btn" data-survey-id="<?= $survey['id']; ?>"><?= trans('delete'); ?></button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -90,28 +80,22 @@ require_once __DIR__ . '/../templates/header.php';
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.delete-survey-btn').forEach(button => {
         button.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
+            if (confirm('<?= trans('confirm_delete'); ?>')) {
                 const surveyId = this.dataset.surveyId;
                 const formData = new FormData();
                 formData.append('action', 'delete_survey');
                 formData.append('survey_id', surveyId);
-
-                fetch('../api.php', {
+                fetch('<?= site_url('api.php'); ?>', {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 'success') {
-                        // Reload the page to show the updated list
                         location.reload();
                     } else {
                         alert('Error: ' + result.message);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while deleting the survey.');
                 });
             }
         });

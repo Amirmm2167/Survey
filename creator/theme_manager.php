@@ -5,22 +5,15 @@ require_once __DIR__ . '/../core/functions.php';
 
 // --- Authorization Check ---
 if (!isset($_SESSION['user_id'])) {
-    redirect('../index.php');
+    redirect(site_url());
 }
 $user_id = $_SESSION['user_id'];
-
-// --- Fetch User's Plan and Theme Limit ---
 $plan = get_user_plan($pdo, $user_id);
 
-// If user's plan doesn't allow custom themes, deny access.
 if (!$plan || $plan['custom_theme_limit'] <= 0) {
-    echo "<p>Your current plan does not support custom themes.</p>";
-    echo '<a href="index.php">Back to Dashboard</a>';
-    require_once __DIR__ . '/../templates/footer.php';
-    exit;
+    redirect(site_url('creator/'));
 }
 
-// --- Fetch User's Custom Themes ---
 $custom_themes = [];
 try {
     $stmt = $pdo->prepare("SELECT * FROM custom_themes WHERE creator_id = ? ORDER BY created_at DESC");
@@ -35,39 +28,33 @@ $can_create_new = $theme_count < $theme_limit;
 require_once __DIR__ . '/../templates/header.php';
 ?>
 
-<h1>Theme Manager</h1>
-<p>Create and manage your custom survey themes.</p>
-<a href="<?= site_url('creator/'); ?>">Back to Dashboard</a>
-
+<h1><?= trans('theme_manager'); ?></h1>
+<p><?= trans('theme_manager_desc'); ?></p>
+<a href="<?= site_url('creator/'); ?>"><?= trans('back_to_dashboard'); ?></a>
 <hr>
-
-<!-- Create New Theme Section -->
 <div>
-    <h3>Create a New Theme</h3>
-    <p>You have created <?= $theme_count; ?> out of <?= $theme_limit; ?> custom themes.</p>
+    <h3><?= trans('create_new_theme'); ?></h3>
+    <p><?= str_replace(['{count}', '{limit}'], [$theme_count, $theme_limit], trans('themes_created')); ?></p>
     <?php if ($can_create_new): ?>
-        <a href="<?= site_url('creator/create_custom_theme.php'); ?>" class="button-link"> + Create New Theme</a>
+        <a href="<?= site_url('creator/create_custom_theme.php'); ?>" class="button-link">+ <?= trans('create_new_theme'); ?></a>
     <?php else: ?>
-        <p>You have reached your theme limit. Please upgrade your plan or delete an existing theme to create a new one.</p>
-        <button disabled>+ Create New Theme</button>
+        <p><?= trans('theme_limit_reached'); ?></p>
+        <button disabled>+ <?= trans('create_new_theme'); ?></button>
     <?php endif; ?>
 </div>
-
 <hr>
-
-<!-- List of Custom Themes -->
 <div>
-    <h3>Your Custom Themes</h3>
+    <h3><?= trans('your_custom_themes'); ?></h3>
     <div class="themes-list">
         <?php if (empty($custom_themes)): ?>
-            <p>You have not created any custom themes yet.</p>
+            <p><?= trans('no_themes_found'); ?></p>
         <?php else: ?>
             <table>
                 <thead>
                     <tr>
-                        <th>Theme Name</th>
-                        <th>Color Palette</th>
-                        <th>Actions</th>
+                        <th><?= trans('theme_name'); ?></th>
+                        <th><?= trans('color_palette'); ?></th>
+                        <th><?= trans('actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,8 +65,8 @@ require_once __DIR__ . '/../templates/header.php';
                                 <!-- Color swatches -->
                             </td>
                             <td>
-                                <a href="<?= site_url('creator/edit_custom_theme.php?id=' . $theme['id']); ?>">Edit</a> |
-                                <a href="#" class="delete-theme-btn" data-theme-id="<?= $theme['id']; ?>">Delete</a>
+                                <a href="<?= site_url('creator/edit_custom_theme.php?id=' . $theme['id']); ?>"><?= trans('edit'); ?></a> |
+                                <a href="#" class="delete-theme-btn" data-theme-id="<?= $theme['id']; ?>"><?= trans('delete'); ?></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -88,19 +75,17 @@ require_once __DIR__ . '/../templates/header.php';
         <?php endif; ?>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.delete-theme-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            if (confirm('Are you sure you want to delete this theme?')) {
+            if (confirm('<?= trans('confirm_delete'); ?>')) {
                 const themeId = this.dataset.themeId;
                 const formData = new FormData();
                 formData.append('action', 'delete_theme');
                 formData.append('theme_id', themeId);
-
-                fetch('../api.php', {
+                fetch('<?= site_url('api.php'); ?>', {
                     method: 'POST',
                     body: formData
                 })
