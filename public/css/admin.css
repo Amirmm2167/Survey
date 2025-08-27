@@ -185,3 +185,58 @@
 .stat-card .stat-list li:last-child {
     border-bottom: none;
 }
+
+/* --- Admin Forms & Tables --- */
+.admin-main-content form {
+    background-color: var(--admin-surface);
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+}
+
+.admin-main-content input[type="text"],
+.admin-main-content input[type="email"],
+.admin-main-content input[type="password"],
+.admin-main-content input[type="number"],
+.admin-main-content select {
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    border: 1px solid var(--admin-border);
+    padding: 10px;
+    transition: border-color 0.3s;
+}
+
+.admin-main-content input:focus,
+.admin-main-content select:focus {
+    outline: none;
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 10px var(--admin-primary);
+}
+
+.admin-main-content button[type="submit"] {
+    background-color: var(--admin-primary);
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.admin-main-content button[type="submit"]:hover {
+    background-color: #e63746; /* A brighter pink/red from the palette */
+}
+
+.admin-main-content table {
+    background-color: var(--admin-surface);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+}
+
+.admin-main-content th {
+    background-color: var(--admin-sidebar);
+    color: var(--admin-text);
+    font-weight: bold;
+}
+
+.admin-main-content td {
+    border-top: 1px solid var(--admin-border);
+}

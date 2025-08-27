@@ -51,6 +51,7 @@ require_once __DIR__ . '/../core/functions.php';
             ?>
         </main>
     </div>
+    <script src="<?= site_url('public/js/main.js'); ?>"></script>
     <script src="<?= site_url('public/js/admin.js'); ?>"></script>
 </body>
 </html>
