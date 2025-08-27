@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+    }
 
     closeBtn.addEventListener('click', () => closeModal('generic-modal'));
     window.addEventListener('click', (event) => {
