@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <script src="/public/js/main.js"></script>
+    <script src="<?= site_url('public/js/main.js'); ?>"></script>
 
     <!-- Floating Language Switcher -->
     <div class="language-switcher">

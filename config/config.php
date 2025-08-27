@@ -7,5 +7,5 @@ define('DB_NAME', 'your_db_name');
 
 // Site Configuration
 define('DEFAULT_LANG', 'fa'); // Default language: fa (Persian)
-define('BASE_URL', 'http://yourdomain.com'); // Base URL of the site
+define('BASE_URL', 'http://mohman.ir/survey'); // Base URL of the site
 ?>

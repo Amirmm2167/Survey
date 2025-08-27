@@ -15,7 +15,7 @@ require_once __DIR__ . '/../core/localization.php';
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="<?= site_url('public/css/style.css'); ?>">
 
     <!-- Theme-specific stylesheet will be loaded here -->
     <?php
@@ -23,10 +23,14 @@ require_once __DIR__ . '/../core/localization.php';
     if (!isset($theme_file)) {
         $theme_file = 'public/css/themes/default.css';
     }
-    if (file_exists($theme_file)) {
-        echo '<link rel="stylesheet" href="' . htmlspecialchars($theme_file) . '">';
+    // Note: file_exists needs a relative path, but the href needs an absolute one.
+    if (file_exists(__DIR__ . '/../' . $theme_file)) {
+        echo '<link rel="stylesheet" href="' . site_url($theme_file) . '">';
     }
     ?>
+    <script>
+        const BASE_URL = '<?= site_url(); ?>';
+    </script>
 </head>
 <body>
     <div class="container">

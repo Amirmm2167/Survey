@@ -193,6 +193,27 @@ switch ($action) {
         }
         break;
 
+    case 'delete_theme':
+        if (!isset($_SESSION['user_id'])) {
+            $response['message'] = 'Unauthorized.';
+            break;
+        }
+        $user_id = $_SESSION['user_id'];
+        $theme_id = filter_input(INPUT_POST, 'theme_id', FILTER_VALIDATE_INT);
+
+        if (!$theme_id) {
+            $response['message'] = "Invalid theme ID.";
+            break;
+        }
+
+        if (delete_custom_theme($pdo, $theme_id, $user_id)) {
+            $response['status'] = 'success';
+            $response['message'] = 'Theme deleted successfully!';
+        } else {
+            $response['message'] = 'Failed to delete theme.';
+        }
+        break;
+
     // Other cases for 'save_theme', 'create_user', etc., will be added here.
     case 'create_user':
         // Admin-only action

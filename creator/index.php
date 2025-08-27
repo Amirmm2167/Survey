@@ -33,7 +33,7 @@ require_once __DIR__ . '/../templates/header.php';
 ?>
 
 <h1><?= trans('creator_dashboard'); ?></h1>
-<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="../logout.php" id="logout-link">Logout</a></p>
+<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>" id="logout-link">Logout</a></p>
 
 <!-- Account Status Section -->
 <div class="account-status">
@@ -41,7 +41,7 @@ require_once __DIR__ . '/../templates/header.php';
     <?php if ($plan): ?>
         <p><strong>Plan:</strong> <?= htmlspecialchars($plan['name']); ?></p>
         <?php if ($plan['custom_theme_limit'] > 0): ?>
-            <p><a href="theme_manager.php">Manage Your Custom Themes</a></p>
+            <p><a href="<?= site_url('creator/theme_manager.php'); ?>">Manage Your Custom Themes</a></p>
         <?php endif; ?>
     <?php else: ?>
         <p>You do not have an active subscription. Please contact an administrator.</p>
@@ -53,7 +53,7 @@ require_once __DIR__ . '/../templates/header.php';
 <!-- Survey Management Section -->
 <div class="survey-management">
     <h2>My Surveys</h2>
-    <a href="create_survey.php" class="button-link">+ Create New Survey</a>
+    <a href="<?= site_url('creator/create_survey.php'); ?>" class="button-link">+ Create New Survey</a>
     <br><br>
     <table>
         <thead>
@@ -74,9 +74,9 @@ require_once __DIR__ . '/../templates/header.php';
                         <td><?= ucfirst(htmlspecialchars($survey['status'])); ?></td>
                         <td><?= $survey['response_count']; ?></td>
                         <td>
-                            <a href="../survey.php?id=<?= $survey['id']; ?>" target="_blank">View</a> |
-                            <a href="view_results.php?id=<?= $survey['id']; ?>">Results</a> |
-                            <a href="edit_survey.php?id=<?= $survey['id']; ?>">Edit</a> |
+                            <a href="<?= site_url('survey.php?id=' . $survey['id']); ?>" target="_blank">View</a> |
+                            <a href="<?= site_url('creator/view_results.php?id=' . $survey['id']); ?>">Results</a> |
+                            <a href="<?= site_url('creator/edit_survey.php?id=' . $survey['id']); ?>">Edit</a> |
                             <button class="delete-survey-btn" data-survey-id="<?= $survey['id']; ?>">Delete</button>
                         </td>
                     </tr>

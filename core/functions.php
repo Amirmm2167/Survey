@@ -2,7 +2,17 @@
 // core/functions.php
 // A central place for all reusable application logic.
 
+require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/database.php';
+
+/**
+ * Generates an absolute URL by prepending the BASE_URL.
+ * @param string $path The path to append to the base URL.
+ * @return string The full URL.
+ */
+function site_url($path = '') {
+    return BASE_URL . '/' . ltrim($path, '/');
+}
 
 /**
  * A simple helper function for redirecting.
@@ -302,6 +312,28 @@ function delete_survey($pdo, $survey_id, $user_id) {
         return $stmt->execute([$survey_id, $user_id]);
     } catch (PDOException $e) {
         // error_log("Survey deletion failed: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Deletes a custom theme, ensuring the user is the owner.
+ * @param PDO $pdo
+ * @param int $theme_id
+ * @param int $user_id
+ * @return bool True on success, false on failure.
+ */
+function delete_custom_theme($pdo, $theme_id, $user_id) {
+    try {
+        // First, update any surveys using this theme to null
+        $stmt = $pdo->prepare("UPDATE surveys SET custom_theme_id = NULL WHERE custom_theme_id = ? AND creator_id = ?");
+        $stmt->execute([$theme_id, $user_id]);
+
+        // Then, delete the theme
+        $stmt = $pdo->prepare("DELETE FROM custom_themes WHERE id = ? AND creator_id = ?");
+        return $stmt->execute([$theme_id, $user_id]);
+    } catch (PDOException $e) {
+        // error_log("Theme deletion failed: " . $e->getMessage());
         return false;
     }
 }

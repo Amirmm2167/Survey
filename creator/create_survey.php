@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <h1>Create a New Survey</h1>
 
-<form action="../api.php" method="POST" id="create-survey-form">
+<form action="/api.php" method="POST" id="create-survey-form">
     <input type="hidden" name="action" value="create_survey">
     <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
 
@@ -51,7 +51,7 @@ if (!isset($_SESSION['user_id'])) {
     <a href="index.php" style="margin-left: 10px;">Cancel</a>
 </form>
 
-<script src="../public/js/survey-builder.js"></script>
+<script src="<?= site_url('public/js/survey-builder.js'); ?>"></script>
 <script>
 document.getElementById('create-survey-form').addEventListener('submit', function(e) {
     e.preventDefault();

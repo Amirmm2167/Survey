@@ -50,7 +50,7 @@ try {
 ?>
 
 <h1><?= trans('admin_dashboard'); ?></h1>
-<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="../logout.php"><?= trans('logout'); ?></a></p>
+<p>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>! <a href="<?= site_url('logout.php'); ?>"><?= trans('logout'); ?></a></p>
 
 <hr>
 
@@ -58,17 +58,8 @@ try {
 
 <!-- Section to Create New User -->
 <h3>Create New Creator User</h3>
-<?php
-if (isset($_SESSION['user_creation_success'])) {
-    echo '<p style="color: green;">' . $_SESSION['user_creation_success'] . '</p>';
-    unset($_SESSION['user_creation_success']);
-}
-if (isset($_SESSION['user_creation_error'])) {
-    echo '<p class="error">' . $_SESSION['user_creation_error'] . '</p>';
-    unset($_SESSION['user_creation_error']);
-}
-?>
-<form action="../api.php" method="POST" id="create-user-form">
+<div class="form-message" style="display: none; margin-bottom: 10px;"></div>
+<form action="/api.php" method="POST" id="create-user-form">
     <input type="hidden" name="action" value="create_user">
     <input type="hidden" name="role_id" value="<?= $creator_role_id; ?>">
     <div class="form-error" style="display: none; color: red; margin-bottom: 10px;"></div>
